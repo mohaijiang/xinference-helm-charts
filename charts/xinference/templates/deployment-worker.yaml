@@ -18,6 +18,19 @@ spec:
         app: xinference-worker
       {{- include "charts.selectorLabels" . | nindent 8 }}
     spec:
+{{- if .Values.xinferenceWorker.affinity }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                {{- range $key, $value := .Values.xinferenceWorker.affinity }}
+                - key: {{ $key }}
+                  operator: In
+                  values:
+                    - {{ $value }}
+                {{- end }}
+{{- end }}
       initContainers:
       - name: check-supervisor
         image: {{ .Values.config.curl_image | quote }}
